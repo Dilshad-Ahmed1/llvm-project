@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/**'
+      - 'llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/**'
       - '.github/workflows/mpi-sanitizer-ci.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/**'
+      - 'llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/**'
       - '.github/workflows/mpi-sanitizer-ci.yml'
   schedule:
     # Run nightly builds at 2 AM UTC
@@ -121,7 +121,7 @@ jobs:
         path: |
           llvm-build
           llvm-install
-        key: llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-${{ matrix.compiler }}-${{ hashFiles('llvm/**') }}
+        key: llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-${{ matrix.compiler }}-${{ hashFiles('llvm-project/llvm/**') }}
         restore-keys: |
           llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-${{ matrix.compiler }}-
           llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-
@@ -131,7 +131,7 @@ jobs:
         mkdir -p llvm-build
         cd llvm-build
         
-        cmake -G Ninja ../llvm \
+        cmake -G Ninja ../llvm-project/llvm \
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
           -DCMAKE_INSTALL_PREFIX=$PWD/../llvm-install \
           -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra" \
@@ -201,7 +201,7 @@ jobs:
     
     - name: Build and test example programs
       run: |
-        cd llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
+        cd llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
         
         # Set environment variables
         export LLVM_DIR=$PWD/../../../../../llvm-install
@@ -234,7 +234,7 @@ jobs:
     
     - name: Run performance benchmarks
       run: |
-        cd llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build
+        cd llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build
         
         # Run performance comparison
         ./performance_comparison.sh basic/hello_world -np 2 > perf_results.txt
@@ -294,7 +294,7 @@ jobs:
         name: test-artifacts-${{ matrix.os }}-${{ matrix.compiler }}
         path: |
           llvm-build/test-results/
-          llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build/perf_results.txt
+          llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build/perf_results.txt
           llvm-build/Testing/
         retention-days: 7
 
@@ -337,13 +337,13 @@ jobs:
         path: |
           llvm-build
           llvm-install
-        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm/**') }}
+        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm/**') }}
     
     - name: Test with specific MPI implementation
       run: |
         export PATH=$PWD/llvm-install/bin:$PATH
         
-        cd llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
+        cd llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
         
         # Override MPI compiler
         case "${{ matrix.mpi }}" in
@@ -387,7 +387,7 @@ jobs:
         path: |
           llvm-build
           llvm-install
-        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm/**') }}
+        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm/**') }}
     
     - name: Test with real MPI applications
       run: |
@@ -482,14 +482,14 @@ jobs:
     - name: Check code formatting
       run: |
         # Check if code follows LLVM formatting standards
-        find llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer \
+        find llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer \
           -name "*.cpp" -o -name "*.h" | \
           xargs clang-format --dry-run --Werror
     
     - name: Run static analysis
       run: |
         # Run clang-tidy on source files
-        find llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer \
+        find llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer \
           -name "*.cpp" | \
           xargs clang-tidy \
             --checks='-*,llvm-*,readability-*,performance-*,modernize-*' \
@@ -498,12 +498,12 @@ jobs:
     - name: Check code complexity
       run: |
         # Check cyclomatic complexity
-        lizard llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer \
+        lizard llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer \
           --CCN 15 --length 100 --arguments 10
     
     - name: Generate documentation
       run: |
-        cd llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer
+        cd llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer
         
         # Generate Doxygen documentation
         doxygen docs/Doxyfile || echo "Documentation generation completed with warnings"
@@ -512,7 +512,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: documentation
-        path: llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/docs/html/
+        path: llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/docs/html/
         retention-days: 30
 
   # Performance regression testing
@@ -540,13 +540,13 @@ jobs:
         path: |
           llvm-build
           llvm-install
-        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm/**') }}
+        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm/**') }}
     
     - name: Run performance regression tests
       run: |
         export PATH=$PWD/llvm-install/bin:$PATH
         
-        cd llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
+        cd llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
         
         # Build examples
         cd build_scripts
@@ -561,8 +561,8 @@ jobs:
       with:
         name: performance-results
         path: |
-          llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/performance_results.json
-          llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/performance_plots/
+          llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/performance_results.json
+          llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/performance_plots/
         retention-days: 30
 
   # Summary job that depends on all others
