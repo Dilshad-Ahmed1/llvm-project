@@ -240,24 +240,24 @@ jobs:
         ./performance_comparison.sh basic/hello_world -np 2 > perf_results.txt
         
         # Check that overhead is reasonable (< 50%)
-        python3 -c "
+        python3 -c '
 import re
-with open('perf_results.txt', 'r') as f:
+with open("perf_results.txt", "r") as f:
     content = f.read()
     
-overhead_match = re.search(r'Overhead: [0-9.]+s \(([0-9.]+)%\)', content)
+overhead_match = re.search(r"Overhead: [0-9.]+s \(([0-9.]+)%\)", content)
 if overhead_match:
     overhead = float(overhead_match.group(1))
-    print(f'Performance overhead: {overhead}%')
+    print(f"Performance overhead: {overhead}%")
     if overhead > 50.0:
-        print('ERROR: Performance overhead too high!')
+        print("ERROR: Performance overhead too high!")
         exit(1)
     else:
-        print('Performance overhead acceptable')
+        print("Performance overhead acceptable")
 else:
-    print('Could not parse performance results')
+    print("Could not parse performance results")
     exit(1)
-        "
+        '
     
     - name: Run property-based tests
       run: |
