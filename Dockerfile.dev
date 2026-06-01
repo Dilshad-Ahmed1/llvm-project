@@ -1,0 +1,244 @@
+# MPI Usage Sanitizer Development Environment
+# This Dockerfile creates a complete development environment for the MPI Usage Sanitizer
+
+FROM ubuntu:22.04
+
+# Avoid interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Set up basic environment
+ENV LLVM_VERSION=17
+ENV BUILD_TYPE=Release
+ENV PARALLEL_JOBS=4
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    # Build essentials
+    build-essential \
+    cmake \
+    ninja-build \
+    git \
+    wget \
+    curl \
+    # Python and tools
+    python3 \
+    python3-pip \
+    python3-dev \
+    # LLVM dependencies
+    libxml2-dev \
+    libzstd-dev \
+    libedit-dev \
+    swig \
+    libncurses5-dev \
+    liblzma-dev \
+    libz-dev \
+    pkg-config \
+    # Compilers
+    clang-15 \
+    clang-tools-15 \
+    clang-format-15 \
+    clang-tidy-15 \
+    lldb-15 \
+    lld-15 \
+    # MPI implementations
+    openmpi-bin \
+    openmpi-common \
+    libopenmpi-dev \
+    mpich \
+    libmpich-dev \
+    # Development tools
+    valgrind \
+    gdb \
+    strace \
+    htop \
+    tree \
+    vim \
+    nano \
+    # Documentation tools
+    doxygen \
+    graphviz \
+    # Cleanup
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Python environment
+RUN pip3 install \
+    lit \
+    filecheck \
+    pytest \
+    numpy \
+    matplotlib \
+    scipy \
+    pyyaml \
+    jinja2 \
+    sphinx \
+    breathe \
+    cpplint \
+    lizard
+
+# Create development user
+RUN useradd -m -s /bin/bash developer && \
+    echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Set up working directory
+WORKDIR /workspace
+RUN chown developer:developer /workspace
+
+# Switch to development user
+USER developer
+
+# Set up environment variables
+ENV PATH="/workspace/llvm-install/bin:$PATH"
+ENV LD_LIBRARY_PATH="/workspace/llvm-install/lib:$LD_LIBRARY_PATH"
+ENV MPI_SANITIZER_PLUGIN="/workspace/llvm-install/lib/LLVMMPIUsageSanitizerComponents.so"
+
+# Create useful aliases
+RUN echo 'alias mpi-opt="opt -load-pass-plugin=$MPI_SANITIZER_PLUGIN"' >> ~/.bashrc && \
+    echo 'alias mpi-clang="clang -fpass-plugin=$MPI_SANITIZER_PLUGIN"' >> ~/.bashrc && \
+    echo 'alias mpi-clang++="clang++ -fpass-plugin=$MPI_SANITIZER_PLUGIN"' >> ~/.bashrc && \
+    echo 'alias ll="ls -la"' >> ~/.bashrc && \
+    echo 'alias la="ls -la"' >> ~/.bashrc
+
+# Set up git (will be overridden by user)
+RUN git config --global user.name "Developer" && \
+    git config --global user.email "developer@example.com" && \
+    git config --global init.defaultBranch main
+
+# Create build script
+RUN cat > /workspace/build-mpi-sanitizer.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "Building MPI Usage Sanitizer..."
+
+# Configure LLVM build
+mkdir -p llvm-build
+cd llvm-build
+
+cmake -G Ninja ../llvm \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/workspace/llvm-install \
+    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra" \
+    -DLLVM_TARGETS_TO_BUILD="X86;AArch64;ARM" \
+    -DLLVM_ENABLE_ASSERTIONS=ON \
+    -DLLVM_ENABLE_RTTI=ON \
+    -DLLVM_ENABLE_EH=ON \
+    -DLLVM_INCLUDE_TESTS=ON \
+    -DLLVM_INCLUDE_EXAMPLES=ON \
+    -DLLVM_ENABLE_MPI_SANITIZER=ON \
+    -DLLVM_MPI_SANITIZER_ENABLE_PROFILING=ON \
+    -DLLVM_MPI_SANITIZER_ENABLE_OPTIMIZATION=ON \
+    -DLLVM_ENABLE_PROPERTY_BASED_TESTING=ON \
+    -DLLVM_PARALLEL_LINK_JOBS=2 \
+    -DLLVM_PARALLEL_COMPILE_JOBS=4 \
+    -DCMAKE_C_COMPILER=clang-15 \
+    -DCMAKE_CXX_COMPILER=clang++-15
+
+# Build core components
+echo "Building core LLVM components..."
+ninja llvm-config opt FileCheck count not
+
+# Build MPI Sanitizer
+echo "Building MPI Sanitizer..."
+ninja LLVMMPIUsageSanitizerComponents
+
+# Build Clang
+echo "Building Clang..."
+ninja clang
+
+# Build testing tools
+echo "Building testing tools..."
+ninja llvm-lit
+
+# Install
+echo "Installing LLVM..."
+ninja install
+
+echo "Build completed successfully!"
+echo "MPI Sanitizer is available at: $MPI_SANITIZER_PLUGIN"
+EOF
+
+RUN chmod +x /workspace/build-mpi-sanitizer.sh
+
+# Create test script
+RUN cat > /workspace/test-mpi-sanitizer.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "Testing MPI Usage Sanitizer..."
+
+# Create test program
+cat > /tmp/mpi_test.c << 'EOC'
+#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+    
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    
+    printf("Hello from rank %d of %d\n", rank, size);
+    
+    MPI_Finalize();
+    return 0;
+}
+EOC
+
+echo "Compiling test program with MPI Sanitizer..."
+mpi-clang -mllvm -passes=mpi-sanitizer \
+          -mllvm -mpi-sanitizer-level=standard \
+          /tmp/mpi_test.c -o /tmp/mpi_test -lmpi
+
+echo "Running test program..."
+mpirun -np 2 /tmp/mpi_test
+
+echo "Test completed successfully!"
+rm -f /tmp/mpi_test /tmp/mpi_test.c
+EOF
+
+RUN chmod +x /workspace/test-mpi-sanitizer.sh
+
+# Create development helper script
+RUN cat > /workspace/dev-help.sh << 'EOF'
+#!/bin/bash
+
+echo "MPI Usage Sanitizer Development Environment"
+echo "=========================================="
+echo ""
+echo "Available commands:"
+echo "  ./build-mpi-sanitizer.sh  - Build LLVM with MPI Sanitizer"
+echo "  ./test-mpi-sanitizer.sh   - Run basic functionality test"
+echo ""
+echo "Useful aliases:"
+echo "  mpi-clang    - Clang with MPI Sanitizer plugin loaded"
+echo "  mpi-clang++  - Clang++ with MPI Sanitizer plugin loaded"
+echo "  mpi-opt      - opt with MPI Sanitizer plugin loaded"
+echo ""
+echo "Example usage:"
+echo "  mpi-clang -mllvm -passes=mpi-sanitizer program.c -o program -lmpi"
+echo "  mpirun -np 4 ./program"
+echo ""
+echo "Environment variables:"
+echo "  LLVM_DIR: /workspace/llvm-install"
+echo "  MPI_SANITIZER_PLUGIN: $MPI_SANITIZER_PLUGIN"
+echo ""
+echo "To get started:"
+echo "  1. Copy your LLVM source code to /workspace"
+echo "  2. Run ./build-mpi-sanitizer.sh"
+echo "  3. Run ./test-mpi-sanitizer.sh to verify"
+echo ""
+EOF
+
+RUN chmod +x /workspace/dev-help.sh
+
+# Set up welcome message
+RUN echo 'echo "Welcome to MPI Usage Sanitizer Development Environment!"' >> ~/.bashrc && \
+    echo 'echo "Run ./dev-help.sh for usage instructions"' >> ~/.bashrc && \
+    echo 'echo ""' >> ~/.bashrc
+
+# Expose common ports (for potential web interfaces)
+EXPOSE 8080 8000
+
+# Set default command
+CMD ["/bin/bash"]

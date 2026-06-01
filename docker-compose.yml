@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # Main development environment
+  mpi-sanitizer-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mpi-sanitizer-dev
+    volumes:
+      # Mount the entire project
+      - .:/workspace
+      # Persist build artifacts
+      - llvm-build:/workspace/llvm-build
+      - llvm-install:/workspace/llvm-install
+      # Persist user data
+      - dev-home:/home/developer
+    working_dir: /workspace
+    environment:
+      - LLVM_VERSION=17
+      - BUILD_TYPE=Release
+      - PARALLEL_JOBS=4
+      - MPI_SANITIZER_PLUGIN=/workspace/llvm-install/lib/LLVMMPIUsageSanitizerComponents.so
+    # Keep container running
+    tty: true
+    stdin_open: true
+    # Expose ports for potential web interfaces
+    ports:
+      - "8080:8080"
+      - "8000:8000"
+    # Add capabilities for debugging
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  # CI testing environment (Ubuntu 20.04)
+  mpi-sanitizer-ci-ubuntu20:
+    build:
+      context: .
+      dockerfile: Dockerfile.ci
+      args:
+        BASE_IMAGE: ubuntu:20.04
+        LLVM_VERSION: 17
+    container_name: mpi-sanitizer-ci-ubuntu20
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    environment:
+      - CI=true
+      - LLVM_VERSION=17
+    profiles:
+      - ci
+
+  # CI testing environment (Ubuntu 22.04)
+  mpi-sanitizer-ci-ubuntu22:
+    build:
+      context: .
+      dockerfile: Dockerfile.ci
+      args:
+        BASE_IMAGE: ubuntu:22.04
+        LLVM_VERSION: 17
+    container_name: mpi-sanitizer-ci-ubuntu22
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    environment:
+      - CI=true
+      - LLVM_VERSION=17
+    profiles:
+      - ci
+
+  # Documentation generation service
+  docs:
+    build:
+      context: .
+      dockerfile: Dockerfile.docs
+    container_name: mpi-sanitizer-docs
+    volumes:
+      - .:/workspace
+      - docs-output:/workspace/docs/output
+    working_dir: /workspace
+    ports:
+      - "8080:8080"
+    profiles:
+      - docs
+
+volumes:
+  llvm-build:
+    driver: local
+  llvm-install:
+    driver: local
+  dev-home:
+    driver: local
+  docs-output:
+    driver: local
+
+networks:
+  default:
+    name: mpi-sanitizer-network

@@ -1,0 +1,164 @@
+# Documentation generation Dockerfile for MPI Usage Sanitizer
+
+FROM ubuntu:22.04
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install documentation tools
+RUN apt-get update && apt-get install -y \
+    # Basic tools
+    build-essential \
+    git \
+    wget \
+    curl \
+    # Python and documentation tools
+    python3 \
+    python3-pip \
+    python3-dev \
+    # Documentation generation
+    doxygen \
+    graphviz \
+    texlive-latex-base \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    # Web server for serving docs
+    nginx \
+    # Cleanup
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python documentation packages
+RUN pip3 install \
+    sphinx \
+    sphinx-rtd-theme \
+    breathe \
+    exhale \
+    myst-parser \
+    sphinx-copybutton \
+    sphinx-tabs \
+    sphinxcontrib-mermaid \
+    recommonmark \
+    markdown \
+    mkdocs \
+    mkdocs-material \
+    mkdocs-mermaid2-plugin
+
+# Create docs user
+RUN useradd -m -s /bin/bash docs-user
+USER docs-user
+WORKDIR /workspace
+
+# Create documentation build script
+RUN cat > /home/docs-user/build-docs.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "=== Building MPI Usage Sanitizer Documentation ==="
+
+# Create output directory
+mkdir -p /workspace/docs/output
+
+# Build Doxygen documentation
+echo "Building API documentation with Doxygen..."
+cd /workspace/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer
+
+if [ -f "docs/Doxyfile" ]; then
+    doxygen docs/Doxyfile
+    cp -r docs/html/* /workspace/docs/output/api/ 2>/dev/null || mkdir -p /workspace/docs/output/api
+fi
+
+# Build Sphinx documentation if available
+echo "Building user documentation with Sphinx..."
+if [ -f "docs/conf.py" ]; then
+    cd docs
+    sphinx-build -b html . /workspace/docs/output/user/
+fi
+
+# Copy markdown documentation
+echo "Copying markdown documentation..."
+mkdir -p /workspace/docs/output/markdown
+cp /workspace/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/*.md /workspace/docs/output/markdown/ 2>/dev/null || true
+cp /workspace/*.md /workspace/docs/output/markdown/ 2>/dev/null || true
+
+# Generate index page
+cat > /workspace/docs/output/index.html << 'EOHTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPI Usage Sanitizer Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { background: #f4f4f4; padding: 20px; border-radius: 5px; }
+        .section { margin: 20px 0; }
+        .link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .link-card { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
+        .link-card h3 { margin-top: 0; color: #333; }
+        .link-card a { text-decoration: none; color: #0066cc; }
+        .link-card a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MPI Usage Sanitizer LLVM Pass</h1>
+        <p>Comprehensive documentation for the MPI Usage Sanitizer LLVM transformation pass</p>
+    </div>
+
+    <div class="section">
+        <h2>Documentation Sections</h2>
+        <div class="link-grid">
+            <div class="link-card">
+                <h3><a href="api/">API Documentation</a></h3>
+                <p>Complete API reference generated from source code comments using Doxygen</p>
+            </div>
+            <div class="link-card">
+                <h3><a href="user/">User Guide</a></h3>
+                <p>Comprehensive user documentation built with Sphinx</p>
+            </div>
+            <div class="link-card">
+                <h3><a href="markdown/">Markdown Documentation</a></h3>
+                <p>All markdown documentation files including README, guides, and specifications</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Quick Links</h2>
+        <ul>
+            <li><a href="markdown/README.html">Getting Started</a></li>
+            <li><a href="markdown/MPI_USAGE_SANITIZER_DEMO_GUIDE.html">Demo Guide</a></li>
+            <li><a href="markdown/MPI_USAGE_SANITIZER_COMPLETE_DOCUMENTATION.html">Complete Documentation</a></li>
+            <li><a href="api/index.html">API Reference</a></li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>About</h2>
+        <p>The MPI Usage Sanitizer is an LLVM transformation pass that instruments MPI programs for runtime error detection and performance monitoring. It provides comprehensive analysis and instrumentation capabilities to help developers identify and debug MPI-related issues in parallel applications.</p>
+    </div>
+</body>
+</html>
+EOHTML
+
+echo "Documentation build completed!"
+echo "Output available in: /workspace/docs/output/"
+EOF
+
+RUN chmod +x /home/docs-user/build-docs.sh
+
+# Create web server script
+RUN cat > /home/docs-user/serve-docs.sh << 'EOF'
+#!/bin/bash
+
+echo "Starting documentation web server..."
+echo "Documentation will be available at http://localhost:8080"
+
+cd /workspace/docs/output
+python3 -m http.server 8080
+EOF
+
+RUN chmod +x /home/docs-user/serve-docs.sh
+
+# Default command
+CMD ["/home/docs-user/build-docs.sh"]

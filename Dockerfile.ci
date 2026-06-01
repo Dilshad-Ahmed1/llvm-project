@@ -1,0 +1,184 @@
+# CI-specific Dockerfile for testing MPI Usage Sanitizer
+# This is optimized for automated testing in CI environments
+
+ARG BASE_IMAGE=ubuntu:22.04
+FROM ${BASE_IMAGE}
+
+ARG LLVM_VERSION=17
+ARG PARALLEL_JOBS=4
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies based on Ubuntu version
+RUN apt-get update && apt-get install -y \
+    # Build essentials
+    build-essential \
+    cmake \
+    ninja-build \
+    git \
+    wget \
+    curl \
+    # Python
+    python3 \
+    python3-pip \
+    python3-dev \
+    # LLVM dependencies
+    libxml2-dev \
+    libzstd-dev \
+    libedit-dev \
+    swig \
+    libncurses5-dev \
+    liblzma-dev \
+    libz-dev \
+    pkg-config \
+    # Compilers
+    clang \
+    clang-tools \
+    clang-format \
+    clang-tidy \
+    lldb \
+    lld \
+    # MPI implementations
+    openmpi-bin \
+    openmpi-common \
+    libopenmpi-dev \
+    mpich \
+    libmpich-dev \
+    # Testing tools
+    valgrind \
+    gdb \
+    strace \
+    time \
+    # Cleanup
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages for testing
+RUN pip3 install \
+    lit \
+    filecheck \
+    pytest \
+    numpy \
+    matplotlib \
+    scipy \
+    pyyaml \
+    coverage \
+    pytest-cov
+
+# Set up environment
+ENV LLVM_VERSION=${LLVM_VERSION}
+ENV BUILD_TYPE=Release
+ENV PARALLEL_JOBS=${PARALLEL_JOBS}
+ENV CI=true
+
+# Create CI user
+RUN useradd -m -s /bin/bash ci-user
+USER ci-user
+WORKDIR /workspace
+
+# Create CI build script
+RUN cat > /home/ci-user/ci-build.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "=== CI Build Script for MPI Usage Sanitizer ==="
+
+# Configure build
+mkdir -p llvm-build
+cd llvm-build
+
+echo "Configuring LLVM build..."
+cmake -G Ninja ../llvm \
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    -DCMAKE_INSTALL_PREFIX=/workspace/llvm-install \
+    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra" \
+    -DLLVM_TARGETS_TO_BUILD="X86;AArch64" \
+    -DLLVM_ENABLE_ASSERTIONS=ON \
+    -DLLVM_ENABLE_RTTI=ON \
+    -DLLVM_ENABLE_EH=ON \
+    -DLLVM_INCLUDE_TESTS=ON \
+    -DLLVM_ENABLE_MPI_SANITIZER=ON \
+    -DLLVM_MPI_SANITIZER_ENABLE_PROFILING=ON \
+    -DLLVM_MPI_SANITIZER_ENABLE_OPTIMIZATION=ON \
+    -DLLVM_ENABLE_PROPERTY_BASED_TESTING=ON \
+    -DLLVM_PARALLEL_LINK_JOBS=2 \
+    -DLLVM_PARALLEL_COMPILE_JOBS=${PARALLEL_JOBS}
+
+echo "Building LLVM components..."
+ninja llvm-config opt FileCheck count not
+
+echo "Building MPI Sanitizer..."
+ninja LLVMMPIUsageSanitizerComponents
+
+echo "Building Clang..."
+ninja clang
+
+echo "Building test tools..."
+ninja llvm-lit
+
+echo "Installing..."
+ninja install
+
+echo "Build completed successfully!"
+EOF
+
+RUN chmod +x /home/ci-user/ci-build.sh
+
+# Create CI test script
+RUN cat > /home/ci-user/ci-test.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "=== CI Test Script for MPI Usage Sanitizer ==="
+
+export PATH="/workspace/llvm-install/bin:$PATH"
+export LD_LIBRARY_PATH="/workspace/llvm-install/lib:$LD_LIBRARY_PATH"
+
+# Verify installation
+echo "Verifying MPI Sanitizer installation..."
+if ! opt -load-pass-plugin=/workspace/llvm-install/lib/LLVMMPIUsageSanitizerComponents.so -passes=help | grep -q mpi-sanitizer; then
+    echo "ERROR: MPI Sanitizer pass not found"
+    exit 1
+fi
+
+# Run unit tests
+echo "Running unit tests..."
+cd /workspace/llvm-build
+ninja check-mpi-sanitizer
+
+# Test basic functionality
+echo "Testing basic functionality..."
+cat > /tmp/ci_test.c << 'EOC'
+#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+    
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    
+    printf("CI Test: Hello from rank %d of %d\n", rank, size);
+    
+    MPI_Finalize();
+    return 0;
+}
+EOC
+
+clang -fpass-plugin=/workspace/llvm-install/lib/LLVMMPIUsageSanitizerComponents.so \
+      -mllvm -passes=mpi-sanitizer \
+      -mllvm -mpi-sanitizer-level=standard \
+      /tmp/ci_test.c -o /tmp/ci_test -lmpi
+
+echo "Running instrumented test program..."
+timeout 30s mpirun -np 2 /tmp/ci_test
+
+echo "All tests passed!"
+rm -f /tmp/ci_test /tmp/ci_test.c
+EOF
+
+RUN chmod +x /home/ci-user/ci-test.sh
+
+# Default command for CI
+CMD ["/home/ci-user/ci-build.sh"]
