@@ -126,10 +126,30 @@ jobs:
           llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-${{ matrix.compiler }}-
           llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-
     
+    - name: Debug directory structure
+      run: |
+        echo "Current directory: $(pwd)"
+        echo "Directory contents:"
+        ls -la
+        echo "Looking for llvm-project:"
+        find . -name "llvm-project" -type d 2>/dev/null || echo "llvm-project directory not found"
+        echo "Looking for llvm directory:"
+        find . -name "llvm" -type d 2>/dev/null || echo "llvm directory not found"
+        echo "Repository structure:"
+        ls -la llvm-project/ 2>/dev/null || echo "llvm-project directory does not exist"
+    
     - name: Configure LLVM build
       run: |
         mkdir -p llvm-build
         cd llvm-build
+        
+        # Debug: Check if the LLVM source directory exists
+        if [ ! -d "../llvm-project/llvm" ]; then
+          echo "ERROR: LLVM source directory not found at ../llvm-project/llvm"
+          echo "Available directories:"
+          ls -la ../
+          exit 1
+        fi
         
         cmake -G Ninja ../llvm-project/llvm \
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
