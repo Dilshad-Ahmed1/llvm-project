@@ -49,7 +49,7 @@ jobs:
         fetch-depth: 0
     
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
     
@@ -116,7 +116,7 @@ jobs:
         fi
     
     - name: Cache LLVM build
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           llvm-build
@@ -289,7 +289,7 @@ jobs:
     
     - name: Upload test artifacts
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-artifacts-${{ matrix.os }}-${{ matrix.compiler }}
         path: |
@@ -332,7 +332,7 @@ jobs:
         esac
     
     - name: Restore LLVM build cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           llvm-build
@@ -382,7 +382,7 @@ jobs:
           git wget
     
     - name: Restore LLVM build cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           llvm-build
@@ -509,7 +509,7 @@ jobs:
         doxygen docs/Doxyfile || echo "Documentation generation completed with warnings"
     
     - name: Upload documentation
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: documentation
         path: llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/docs/html/
@@ -535,7 +535,7 @@ jobs:
         pip3 install matplotlib numpy scipy
     
     - name: Restore LLVM build cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           llvm-build
@@ -557,7 +557,7 @@ jobs:
         python3 benchmark_optimization.py --validate-performance --iterations=10
     
     - name: Upload performance results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-results
         path: |
