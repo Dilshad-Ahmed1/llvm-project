@@ -1,0 +1,247 @@
+# Sample MPI Usage Sanitizer Performance Monitoring Output
+# Program: performance/bandwidth_test.c
+# Command: mpirun -np 2 ./bandwidth_test_instrumented
+# Date: 2024-01-15 14:40:18
+
+========================================
+MPI Usage Sanitizer v1.0
+Instrumentation Level: FULL
+Performance Monitoring: ENABLED
+Configuration: Default settings
+========================================
+
+[MPI Sanitizer] Performance Monitor: Bandwidth test detected
+[MPI Sanitizer]   - Test type: Point-to-point communication
+[MPI Sanitizer]   - Participants: Process 0 ↔ Process 1
+[MPI Sanitizer]   - Message size range: 1 KB - 16 MB
+[MPI Sanitizer]   - Performance analysis: ENABLED
+
+Process 0: Starting point-to-point bandwidth test with process 1
+Process 1: Starting point-to-point bandwidth test with process 1
+
+=== Point-to-Point Bandwidth Test ===
+
+[MPI Sanitizer] Pre-call: MPI_Send at bandwidth_test.c:85 (1 KB message)
+[MPI Sanitizer]   - Performance timing: ENABLED
+[MPI Sanitizer]   - Message size: 1024 bytes
+[MPI Sanitizer]   - Bandwidth calculation: ACTIVE
+[MPI Sanitizer]   - Network analysis: ENABLED
+[MPI Sanitizer] Post-call: MPI_Send returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Transfer time: 0.000045 seconds
+[MPI Sanitizer]   - Effective bandwidth: 22.7 MB/s
+[MPI Sanitizer]   - Network utilization: 15%
+[MPI Sanitizer]   - Latency: 22.5 microseconds
+
+[MPI Sanitizer] Pre-call: MPI_Recv at bandwidth_test.c:87 (1 KB message)
+[MPI Sanitizer] Post-call: MPI_Recv returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Receive time: 0.000012 seconds
+[MPI Sanitizer]   - Round-trip completed: 0.000057 seconds
+
+Message size:     1024 bytes, Bandwidth:    22.70 MB/s, Latency:    28.50 μs
+
+[MPI Sanitizer] Pre-call: MPI_Send at bandwidth_test.c:85 (4 KB message)
+[MPI Sanitizer]   - Message size: 4096 bytes
+[MPI Sanitizer] Post-call: MPI_Send returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Transfer time: 0.000089 seconds
+[MPI Sanitizer]   - Effective bandwidth: 46.0 MB/s
+[MPI Sanitizer]   - Network utilization: 31%
+[MPI Sanitizer]   - Performance improvement: 102% vs previous
+
+Message size:     4096 bytes, Bandwidth:    46.02 MB/s, Latency:    44.50 μs
+
+[MPI Sanitizer] Pre-call: MPI_Send at bandwidth_test.c:85 (16 KB message)
+[MPI Sanitizer]   - Message size: 16384 bytes
+[MPI Sanitizer] Post-call: MPI_Send returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Transfer time: 0.000234 seconds
+[MPI Sanitizer]   - Effective bandwidth: 70.0 MB/s
+[MPI Sanitizer]   - Network utilization: 47%
+
+Message size:    16384 bytes, Bandwidth:    70.01 MB/s, Latency:   117.00 μs
+
+[MPI Sanitizer] Pre-call: MPI_Send at bandwidth_test.c:85 (64 KB message)
+[MPI Sanitizer]   - Message size: 65536 bytes
+[MPI Sanitizer]   - Large message protocol: ENABLED
+[MPI Sanitizer] Post-call: MPI_Send returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Transfer time: 0.000678 seconds
+[MPI Sanitizer]   - Effective bandwidth: 96.6 MB/s
+[MPI Sanitizer]   - Network utilization: 65%
+[MPI Sanitizer]   - Protocol switch detected: Eager → Rendezvous
+
+Message size:    65536 bytes, Bandwidth:    96.64 MB/s, Latency:   339.00 μs
+
+[MPI Sanitizer] Pre-call: MPI_Send at bandwidth_test.c:85 (1 MB message)
+[MPI Sanitizer]   - Message size: 1048576 bytes
+[MPI Sanitizer]   - Large message optimization: ACTIVE
+[MPI Sanitizer] Post-call: MPI_Send returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Transfer time: 0.009876 seconds
+[MPI Sanitizer]   - Effective bandwidth: 106.2 MB/s
+[MPI Sanitizer]   - Network utilization: 89%
+[MPI Sanitizer]   - Peak bandwidth region: DETECTED
+
+Message size:  1048576 bytes, Bandwidth:   106.18 MB/s, Latency:  4938.00 μs
+
+[MPI Sanitizer] Pre-call: MPI_Send at bandwidth_test.c:85 (16 MB message)
+[MPI Sanitizer]   - Message size: 16777216 bytes
+[MPI Sanitizer]   - Maximum test message size
+[MPI Sanitizer] Post-call: MPI_Send returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Transfer time: 0.156789 seconds
+[MPI Sanitizer]   - Effective bandwidth: 107.0 MB/s
+[MPI Sanitizer]   - Network utilization: 89%
+[MPI Sanitizer]   - Bandwidth plateau: REACHED
+
+Message size: 16777216 bytes, Bandwidth:   107.01 MB/s, Latency: 78394.50 μs
+
+=== Collective Operation Bandwidth Test ===
+
+[MPI Sanitizer] Performance Monitor: Collective operations detected
+[MPI Sanitizer]   - Operation type: MPI_Allreduce
+[MPI Sanitizer]   - Collective algorithm analysis: ENABLED
+
+Process 0: Starting collective bandwidth test
+Process 1: Starting collective bandwidth test
+
+[MPI Sanitizer] Pre-call: MPI_Allreduce at bandwidth_test.c:145 (1K doubles)
+[MPI Sanitizer]   - Collective operation: MPI_Allreduce detected
+[MPI Sanitizer]   - Data count: 1024 doubles (8.0 KB per process)
+[MPI Sanitizer]   - Total data volume: 16.0 KB
+[MPI Sanitizer]   - Processes: 2
+[MPI Sanitizer]   - Expected algorithm: Recursive doubling
+[MPI Sanitizer]   - Collective efficiency prediction: 95%
+[MPI Sanitizer] Post-call: MPI_Allreduce returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Collective time: 0.000234 seconds
+[MPI Sanitizer]   - Effective bandwidth: 68.4 MB/s
+[MPI Sanitizer]   - Algorithm efficiency: 96%
+[MPI Sanitizer]   - Synchronization overhead: 8%
+
+Allreduce count:     1024, Data:   0.02 MB, Bandwidth:    68.38 MB/s, Time:   0.0002 s
+
+[MPI Sanitizer] Pre-call: MPI_Allreduce at bandwidth_test.c:145 (16K doubles)
+[MPI Sanitizer]   - Data count: 16384 doubles (128.0 KB per process)
+[MPI Sanitizer]   - Total data volume: 256.0 KB
+[MPI Sanitizer] Post-call: MPI_Allreduce returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Collective time: 0.001456 seconds
+[MPI Sanitizer]   - Effective bandwidth: 175.8 MB/s
+[MPI Sanitizer]   - Algorithm efficiency: 94%
+
+Allreduce count:    16384, Data:   0.26 MB, Bandwidth:   175.82 MB/s, Time:   0.0015 s
+
+[MPI Sanitizer] Pre-call: MPI_Allreduce at bandwidth_test.c:145 (1M doubles)
+[MPI Sanitizer]   - Data count: 1048576 doubles (8.0 MB per process)
+[MPI Sanitizer]   - Total data volume: 16.0 MB
+[MPI Sanitizer]   - Large collective detected
+[MPI Sanitizer] Post-call: MPI_Allreduce returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Collective time: 0.089234 seconds
+[MPI Sanitizer]   - Effective bandwidth: 179.3 MB/s
+[MPI Sanitizer]   - Algorithm efficiency: 91%
+[MPI Sanitizer]   - Memory bandwidth limited: DETECTED
+
+Allreduce count:  1048576, Data:  16.00 MB, Bandwidth:   179.31 MB/s, Time:   0.0892 s
+
+=== Communication Pattern Analysis ===
+
+Process 0: Communication pattern analysis
+Process 1: Communication pattern analysis
+
+--- Pattern 1: All-to-one communication ---
+
+[MPI Sanitizer] Communication Pattern: All-to-one detected
+[MPI Sanitizer]   - Pattern type: Convergent communication
+[MPI Sanitizer]   - Bottleneck analysis: ENABLED
+[MPI Sanitizer]   - Root process: 0 (receiver)
+
+[MPI Sanitizer] Pre-call: MPI_Recv at bandwidth_test.c:285 (All-to-one)
+[MPI Sanitizer]   - Serialized receive pattern detected
+[MPI Sanitizer]   - Bottleneck: Process 0 (sequential receives)
+[MPI Sanitizer] Post-call: MPI_Recv returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Serialization factor: 75%
+[MPI Sanitizer]   - Efficiency loss: 25%
+
+[MPI Sanitizer] Pattern Analysis: All-to-one
+[MPI Sanitizer]   - Communication efficiency: 75%
+[MPI Sanitizer]   - Bottleneck severity: MODERATE
+[MPI Sanitizer]   - Recommendation: Use MPI_Gather for better performance
+[MPI Sanitizer]   - Expected improvement: 40-60%
+
+--- Pattern 2: Ring communication ---
+
+[MPI Sanitizer] Communication Pattern: Ring detected
+[MPI Sanitizer]   - Pattern type: Nearest-neighbor exchange
+[MPI Sanitizer]   - Load balance analysis: ENABLED
+
+[MPI Sanitizer] Pre-call: MPI_Isend at bandwidth_test.c:305 (Ring)
+[MPI Sanitizer]   - Non-blocking ring communication
+[MPI Sanitizer]   - Destination: Process 0 (next in ring)
+[MPI Sanitizer] Post-call: MPI_Isend returned MPI_SUCCESS (0)
+
+[MPI Sanitizer] Pre-call: MPI_Irecv at bandwidth_test.c:306 (Ring)
+[MPI Sanitizer]   - Source: Process 1 (previous in ring)
+[MPI Sanitizer] Post-call: MPI_Irecv returned MPI_SUCCESS (0)
+
+[MPI Sanitizer] Pattern Analysis: Ring
+[MPI Sanitizer]   - Communication efficiency: 98%
+[MPI Sanitizer]   - Load balance: EXCELLENT
+[MPI Sanitizer]   - Scalability: GOOD (O(1) per process)
+[MPI Sanitizer]   - No bottlenecks detected
+
+--- Pattern 3: All-to-all communication ---
+
+[MPI Sanitizer] Communication Pattern: All-to-all detected
+[MPI Sanitizer]   - Pattern type: Complete exchange
+[MPI Sanitizer]   - Congestion analysis: ENABLED
+
+[MPI Sanitizer] Pre-call: MPI_Alltoall at bandwidth_test.c:325
+[MPI Sanitizer]   - All-to-all collective operation
+[MPI Sanitizer]   - Data per exchange: 64 KB
+[MPI Sanitizer]   - Total data volume: 128 KB
+[MPI Sanitizer]   - Network congestion prediction: MODERATE
+[MPI Sanitizer] Post-call: MPI_Alltoall returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Exchange time: 0.002345 seconds
+[MPI Sanitizer]   - Effective bandwidth: 54.6 MB/s
+[MPI Sanitizer]   - Network utilization: 67%
+[MPI Sanitizer]   - Congestion detected: MODERATE
+
+[MPI Sanitizer] Pattern Analysis: All-to-all
+[MPI Sanitizer]   - Communication efficiency: 67%
+[MPI Sanitizer]   - Network congestion: MODERATE
+[MPI Sanitizer]   - Recommendation: Consider staged communication for larger scales
+[MPI Sanitizer]   - Bandwidth utilization: Suboptimal due to contention
+
+========================================
+MPI Usage Sanitizer Performance Summary
+========================================
+
+Point-to-Point Performance:
+  - Peak bandwidth: 107.0 MB/s (16 MB messages)
+  - Minimum latency: 22.5 μs (1 KB messages)
+  - Bandwidth efficiency: 89% of theoretical peak
+  - Protocol transitions: 1 (Eager → Rendezvous at 64 KB)
+
+Collective Performance:
+  - Peak collective bandwidth: 179.3 MB/s (MPI_Allreduce)
+  - Algorithm efficiency: 91-96%
+  - Synchronization overhead: 8-12%
+  - Memory bandwidth limited for large messages
+
+Communication Patterns:
+  - All-to-one efficiency: 75% (bottleneck detected)
+  - Ring efficiency: 98% (optimal)
+  - All-to-all efficiency: 67% (congestion detected)
+
+Performance Recommendations:
+1. Use MPI_Gather instead of manual all-to-one patterns
+2. Ring communication shows excellent scalability
+3. Consider staged all-to-all for better bandwidth utilization
+4. Message sizes 1-16 MB achieve peak bandwidth
+5. Collective operations are well-optimized
+
+Network Analysis:
+  - Peak utilization: 89%
+  - Average utilization: 52%
+  - Congestion points: All-to-all patterns
+  - Bottlenecks: Serialized communication patterns
+
+Total Performance Monitoring Overhead: 3.2%
+
+========================================
+MPI Usage Sanitizer: Performance analysis complete
+========================================

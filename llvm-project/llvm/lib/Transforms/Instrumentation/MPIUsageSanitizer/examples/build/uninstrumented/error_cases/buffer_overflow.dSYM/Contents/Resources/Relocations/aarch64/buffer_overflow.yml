@@ -1,0 +1,13 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/rakshitha/cd/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build/uninstrumented/error_cases/buffer_overflow'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _buffer_overflow_receive_example, symObjAddr: 0x0, symBinAddr: 0x10000249C, symSize: 0x1A8 }
+  - { offsetInCU: 0x7F, offset: 0x7F, size: 0x8, addend: 0x0, symName: _buffer_overflow_receive_example, symObjAddr: 0x0, symBinAddr: 0x10000249C, symSize: 0x1A8 }
+  - { offsetInCU: 0x291, offset: 0x291, size: 0x8, addend: 0x0, symName: _buffer_underflow_send_example, symObjAddr: 0x1A8, symBinAddr: 0x100002644, symSize: 0x238 }
+  - { offsetInCU: 0x3AC, offset: 0x3AC, size: 0x8, addend: 0x0, symName: _null_pointer_example, symObjAddr: 0x3E0, symBinAddr: 0x10000287C, symSize: 0xF4 }
+  - { offsetInCU: 0x46F, offset: 0x46F, size: 0x8, addend: 0x0, symName: _uninitialized_buffer_example, symObjAddr: 0x4D4, symBinAddr: 0x100002970, symSize: 0x138 }
+  - { offsetInCU: 0x538, offset: 0x538, size: 0x8, addend: 0x0, symName: _buffer_alignment_example, symObjAddr: 0x60C, symBinAddr: 0x100002AA8, symSize: 0x24C }
+  - { offsetInCU: 0x622, offset: 0x622, size: 0x8, addend: 0x0, symName: _buffer_reuse_example, symObjAddr: 0x858, symBinAddr: 0x100002CF4, symSize: 0x324 }
+  - { offsetInCU: 0x7BD, offset: 0x7BD, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0xB7C, symBinAddr: 0x100003018, symSize: 0x1C4 }
+...

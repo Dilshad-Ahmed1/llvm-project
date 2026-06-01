@@ -1,0 +1,112 @@
+# Sample MPI Usage Sanitizer Output
+# Program: basic/hello_world.c
+# Command: mpirun -np 4 ./hello_world_instrumented
+# Date: 2024-01-15 14:30:25
+
+========================================
+MPI Usage Sanitizer v1.0
+Instrumentation Level: FULL
+Configuration: Default settings
+========================================
+
+[MPI Sanitizer] Process 0: Initialization started
+[MPI Sanitizer] Process 1: Initialization started  
+[MPI Sanitizer] Process 2: Initialization started
+[MPI Sanitizer] Process 3: Initialization started
+
+[MPI Sanitizer] Pre-call: MPI_Init at hello_world.c:25
+[MPI Sanitizer]   - Function: MPI_Init
+[MPI Sanitizer]   - Parameters: argc=0x7fff5fbff79c, argv=0x7fff5fbff790
+[MPI Sanitizer]   - Parameter validation: PASSED
+[MPI Sanitizer]   - MPI state check: Not initialized (correct)
+[MPI Sanitizer]   - Thread safety: Single-threaded mode
+[MPI Sanitizer] Post-call: MPI_Init returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Initialization: SUCCESSFUL
+[MPI Sanitizer]   - Process count: 4
+[MPI Sanitizer]   - Execution time: 0.002341 seconds
+
+[MPI Sanitizer] Pre-call: MPI_Comm_rank at hello_world.c:32
+[MPI Sanitizer]   - Function: MPI_Comm_rank
+[MPI Sanitizer]   - Communicator: MPI_COMM_WORLD (handle: 0x44000000)
+[MPI Sanitizer]   - Output parameter: rank (0x7fff5fbff78c)
+[MPI Sanitizer]   - Communicator validation: PASSED (4 processes)
+[MPI Sanitizer]   - Parameter validation: PASSED
+[MPI Sanitizer] Post-call: MPI_Comm_rank returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Process rank: 0
+[MPI Sanitizer]   - Execution time: 0.000012 seconds
+
+[MPI Sanitizer] Pre-call: MPI_Comm_size at hello_world.c:33
+[MPI Sanitizer]   - Function: MPI_Comm_size
+[MPI Sanitizer]   - Communicator: MPI_COMM_WORLD (handle: 0x44000000)
+[MPI Sanitizer]   - Output parameter: size (0x7fff5fbff788)
+[MPI Sanitizer]   - Communicator validation: PASSED
+[MPI Sanitizer] Post-call: MPI_Comm_size returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Communicator size: 4
+[MPI Sanitizer]   - Execution time: 0.000008 seconds
+
+Hello from process 0 of 4
+Hello from process 1 of 4
+Hello from process 2 of 4
+Hello from process 3 of 4
+
+[MPI Sanitizer] Pre-call: MPI_Barrier at hello_world.c:39
+[MPI Sanitizer]   - Function: MPI_Barrier
+[MPI Sanitizer]   - Communicator: MPI_COMM_WORLD (handle: 0x44000000)
+[MPI Sanitizer]   - Collective operation detected
+[MPI Sanitizer]   - Deadlock analysis: ENABLED
+[MPI Sanitizer]   - All processes participating: VERIFIED
+[MPI Sanitizer] Post-call: MPI_Barrier returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Synchronization: SUCCESSFUL
+[MPI Sanitizer]   - Execution time: 0.000156 seconds
+[MPI Sanitizer]   - Collective efficiency: 98.2%
+
+[MPI Sanitizer] Pre-call: MPI_Finalize at hello_world.c:46
+[MPI Sanitizer]   - Function: MPI_Finalize
+[MPI Sanitizer]   - Outstanding requests check: 0 pending
+[MPI Sanitizer]   - Resource cleanup validation: ENABLED
+[MPI Sanitizer]   - Communicator cleanup: MPI_COMM_WORLD
+[MPI Sanitizer] Post-call: MPI_Finalize returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Finalization: SUCCESSFUL
+[MPI Sanitizer]   - Resource cleanup: COMPLETE
+[MPI Sanitizer]   - Execution time: 0.001234 seconds
+
+========================================
+MPI Usage Sanitizer Summary (Process 0)
+========================================
+Total MPI calls: 5
+  - MPI_Init: 1
+  - MPI_Comm_rank: 1  
+  - MPI_Comm_size: 1
+  - MPI_Barrier: 1
+  - MPI_Finalize: 1
+
+Error Analysis:
+  - Errors detected: 0
+  - Warnings issued: 0
+  - Critical issues: 0
+
+Performance Analysis:
+  - Total MPI time: 0.003751 seconds
+  - Application runtime: 0.045623 seconds
+  - MPI overhead: 8.2%
+  - Average call latency: 0.750 milliseconds
+
+Memory Analysis:
+  - Buffer validations: 5
+  - Memory errors: 0
+  - Alignment issues: 0
+
+Correctness Analysis:
+  - Parameter validations: 5/5 PASSED
+  - Return code checks: 5/5 PASSED
+  - Resource management: CORRECT
+  - Deadlock potential: NONE DETECTED
+
+Recommendations:
+  - Program follows MPI best practices
+  - No performance optimizations needed for this simple example
+  - Consider using MPI_Init_thread for multi-threaded applications
+
+========================================
+MPI Usage Sanitizer: Analysis Complete
+========================================

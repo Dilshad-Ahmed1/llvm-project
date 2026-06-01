@@ -1,0 +1,539 @@
+{
+  "basic/broadcast": {
+    "np_1": {
+      "program": "basic/broadcast",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [
+        0.2444291114807129,
+        0.1068270206451416
+      ],
+      "instrumented_times": [
+        0.13856720924377441,
+        0.10705208778381348
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -30.07401876771139,
+      "overhead_seconds": -0.0528184175491333,
+      "uninstrumented_avg": 0.17562806606292725,
+      "instrumented_avg": 0.12280964851379395
+    },
+    "np_2": {
+      "program": "basic/broadcast",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [
+        0.11550307273864746,
+        0.11177706718444824
+      ],
+      "instrumented_times": [
+        0.11578702926635742,
+        0.1159060001373291
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": 1.9416080446289765,
+      "overhead_seconds": 0.00220644474029541,
+      "uninstrumented_avg": 0.11364006996154785,
+      "instrumented_avg": 0.11584651470184326
+    },
+    "np_4": {
+      "program": "basic/broadcast",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [
+        0.13183212280273438,
+        0.12697911262512207
+      ],
+      "instrumented_times": [
+        0.12076902389526367,
+        0.12653708457946777
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -4.4453738393950255,
+      "overhead_seconds": -0.0057525634765625,
+      "uninstrumented_avg": 0.12940561771392822,
+      "instrumented_avg": 0.12365305423736572
+    }
+  },
+  "basic/hello_world": {
+    "np_1": {
+      "program": "basic/hello_world",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [
+        0.13583731651306152,
+        0.10294127464294434
+      ],
+      "instrumented_times": [
+        0.1382439136505127,
+        0.10791492462158203
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": 3.0908328424079636,
+      "overhead_seconds": 0.0036901235580444336,
+      "uninstrumented_avg": 0.11938929557800293,
+      "instrumented_avg": 0.12307941913604736
+    },
+    "np_2": {
+      "program": "basic/hello_world",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [
+        0.11059832572937012,
+        0.1138920783996582
+      ],
+      "instrumented_times": [
+        0.12533116340637207,
+        0.11007523536682129
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": 4.86256625824013,
+      "overhead_seconds": 0.0054579973220825195,
+      "uninstrumented_avg": 0.11224520206451416,
+      "instrumented_avg": 0.11770319938659668
+    },
+    "np_4": {
+      "program": "basic/hello_world",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [
+        0.12891316413879395,
+        0.12391495704650879
+      ],
+      "instrumented_times": [
+        0.11599898338317871,
+        0.11617803573608398
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -8.16803999856663,
+      "overhead_seconds": -0.01032555103302002,
+      "uninstrumented_avg": 0.12641406059265137,
+      "instrumented_avg": 0.11608850955963135
+    }
+  },
+  "basic/send_recv": {
+    "np_1": {
+      "program": "basic/send_recv",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [],
+      "instrumented_times": [],
+      "uninstrumented_success": 0,
+      "instrumented_success": 0,
+      "overhead_percent": null,
+      "overhead_seconds": null
+    },
+    "np_2": {
+      "program": "basic/send_recv",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [
+        0.12191224098205566,
+        0.11322903633117676
+      ],
+      "instrumented_times": [
+        0.1118626594543457,
+        0.10893607139587402
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -6.099544336448826,
+      "overhead_seconds": -0.007171273231506348,
+      "uninstrumented_avg": 0.11757063865661621,
+      "instrumented_avg": 0.11039936542510986
+    },
+    "np_4": {
+      "program": "basic/send_recv",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [
+        0.12839198112487793,
+        0.12436223030090332
+      ],
+      "instrumented_times": [
+        0.11691904067993164,
+        0.1134498119354248
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -8.856572036584263,
+      "overhead_seconds": -0.011192679405212402,
+      "uninstrumented_avg": 0.12637710571289062,
+      "instrumented_avg": 0.11518442630767822
+    }
+  },
+  "collective/allreduce_patterns": {
+    "np_1": {
+      "program": "collective/allreduce_patterns",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [
+        0.1401500701904297,
+        0.1031496524810791
+      ],
+      "instrumented_times": [
+        0.14247703552246094,
+        0.1036081314086914
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": 1.1448612555158244,
+      "overhead_seconds": 0.0013927221298217773,
+      "uninstrumented_avg": 0.1216498613357544,
+      "instrumented_avg": 0.12304258346557617
+    },
+    "np_2": {
+      "program": "collective/allreduce_patterns",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [
+        0.10851407051086426,
+        0.11442208290100098
+      ],
+      "instrumented_times": [
+        0.11553192138671875,
+        0.12290501594543457
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": 6.953014880296708,
+      "overhead_seconds": 0.007750391960144043,
+      "uninstrumented_avg": 0.11146807670593262,
+      "instrumented_avg": 0.11921846866607666
+    },
+    "np_4": {
+      "program": "collective/allreduce_patterns",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [
+        0.1257920265197754,
+        0.1870579719543457
+      ],
+      "instrumented_times": [
+        0.12001609802246094,
+        0.12030696868896484
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -23.18265370510933,
+      "overhead_seconds": -0.036263465881347656,
+      "uninstrumented_avg": 0.15642499923706055,
+      "instrumented_avg": 0.12016153335571289
+    }
+  },
+  "collective/gather_scatter": {
+    "np_1": {
+      "program": "collective/gather_scatter",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [
+        0.1441822052001953,
+        0.10680389404296875
+      ],
+      "instrumented_times": [
+        0.13745689392089844,
+        0.1089327335357666
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -1.8313650837076048,
+      "overhead_seconds": -0.0022982358932495117,
+      "uninstrumented_avg": 0.12549304962158203,
+      "instrumented_avg": 0.12319481372833252
+    },
+    "np_2": {
+      "program": "collective/gather_scatter",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [
+        0.10931515693664551,
+        0.11076498031616211
+      ],
+      "instrumented_times": [
+        0.11244511604309082,
+        0.11429405212402344
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": 3.0257300806103027,
+      "overhead_seconds": 0.0033295154571533203,
+      "uninstrumented_avg": 0.11004006862640381,
+      "instrumented_avg": 0.11336958408355713
+    },
+    "np_4": {
+      "program": "collective/gather_scatter",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [
+        0.12827014923095703,
+        0.12385201454162598
+      ],
+      "instrumented_times": [
+        0.11490797996520996,
+        0.11664938926696777
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -8.156678584971589,
+      "overhead_seconds": -0.010282397270202637,
+      "uninstrumented_avg": 0.1260610818862915,
+      "instrumented_avg": 0.11577868461608887
+    }
+  },
+  "error_cases/buffer_overflow": {
+    "np_1": {
+      "program": "error_cases/buffer_overflow",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [],
+      "instrumented_times": [],
+      "uninstrumented_success": 0,
+      "instrumented_success": 0,
+      "overhead_percent": null,
+      "overhead_seconds": null
+    },
+    "np_2": {
+      "program": "error_cases/buffer_overflow",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [],
+      "instrumented_times": [],
+      "uninstrumented_success": 0,
+      "instrumented_success": 0,
+      "overhead_percent": null,
+      "overhead_seconds": null
+    },
+    "np_4": {
+      "program": "error_cases/buffer_overflow",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [],
+      "instrumented_times": [],
+      "uninstrumented_success": 0,
+      "instrumented_success": 0,
+      "overhead_percent": null,
+      "overhead_seconds": null
+    }
+  },
+  "error_cases/deadlock_example": {
+    "np_1": {
+      "program": "error_cases/deadlock_example",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [],
+      "instrumented_times": [],
+      "uninstrumented_success": 0,
+      "instrumented_success": 0,
+      "overhead_percent": null,
+      "overhead_seconds": null
+    },
+    "np_2": {
+      "program": "error_cases/deadlock_example",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [
+        0.1266489028930664,
+        0.1362318992614746
+      ],
+      "instrumented_times": [
+        0.12354779243469238,
+        0.12722086906433105
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -4.6074648876022355,
+      "overhead_seconds": -0.006056070327758789,
+      "uninstrumented_avg": 0.1314404010772705,
+      "instrumented_avg": 0.12538433074951172
+    },
+    "np_4": {
+      "program": "error_cases/deadlock_example",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [
+        0.13535499572753906,
+        0.1307981014251709
+      ],
+      "instrumented_times": [
+        0.12861275672912598,
+        0.12639117240905762
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -4.18900555124081,
+      "overhead_seconds": -0.005574584007263184,
+      "uninstrumented_avg": 0.13307654857635498,
+      "instrumented_avg": 0.1275019645690918
+    }
+  },
+  "performance/bandwidth_test": {
+    "np_1": {
+      "program": "performance/bandwidth_test",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [
+        0.1511826515197754,
+        0.12420892715454102
+      ],
+      "instrumented_times": [
+        0.14539194107055664,
+        0.11210989952087402
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -6.496109346917432,
+      "overhead_seconds": -0.008944869041442871,
+      "uninstrumented_avg": 0.1376957893371582,
+      "instrumented_avg": 0.12875092029571533
+    },
+    "np_2": {
+      "program": "performance/bandwidth_test",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [
+        0.2368602752685547,
+        0.20269417762756348
+      ],
+      "instrumented_times": [
+        0.22860121726989746,
+        0.2603168487548828
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": 11.230374940673943,
+      "overhead_seconds": 0.024681806564331055,
+      "uninstrumented_avg": 0.21977722644805908,
+      "instrumented_avg": 0.24445903301239014
+    },
+    "np_4": {
+      "program": "performance/bandwidth_test",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [
+        0.3268120288848877,
+        0.26117777824401855
+      ],
+      "instrumented_times": [
+        0.2942206859588623,
+        0.2641611099243164
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -5.035463351023109,
+      "overhead_seconds": -0.01480400562286377,
+      "uninstrumented_avg": 0.2939949035644531,
+      "instrumented_avg": 0.27919089794158936
+    }
+  },
+  "point_to_point/nonblocking_comm": {
+    "np_1": {
+      "program": "point_to_point/nonblocking_comm",
+      "mpi_args": [
+        "-np",
+        "1"
+      ],
+      "uninstrumented_times": [],
+      "instrumented_times": [],
+      "uninstrumented_success": 0,
+      "instrumented_success": 0,
+      "overhead_percent": null,
+      "overhead_seconds": null
+    },
+    "np_2": {
+      "program": "point_to_point/nonblocking_comm",
+      "mpi_args": [
+        "-np",
+        "2"
+      ],
+      "uninstrumented_times": [
+        0.2093799114227295,
+        0.24934673309326172
+      ],
+      "instrumented_times": [
+        0.23662900924682617,
+        0.2252969741821289
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": 0.697439085174469,
+      "overhead_seconds": 0.0015996694564819336,
+      "uninstrumented_avg": 0.2293633222579956,
+      "instrumented_avg": 0.23096299171447754
+    },
+    "np_4": {
+      "program": "point_to_point/nonblocking_comm",
+      "mpi_args": [
+        "-np",
+        "4"
+      ],
+      "uninstrumented_times": [
+        0.22830891609191895,
+        0.22304487228393555
+      ],
+      "instrumented_times": [
+        0.22577118873596191,
+        0.21852612495422363
+      ],
+      "uninstrumented_success": 2,
+      "instrumented_success": 2,
+      "overhead_percent": -1.563402117673781,
+      "overhead_seconds": -0.0035282373428344727,
+      "uninstrumented_avg": 0.22567689418792725,
+      "instrumented_avg": 0.22214865684509277
+    }
+  }
+}

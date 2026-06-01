@@ -1,0 +1,12 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/rakshitha/cd/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build/uninstrumented/error_cases/deadlock_example'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _safe_communication_pattern, symObjAddr: 0x0, symBinAddr: 0x100002EB4, symSize: 0x1F0 }
+  - { offsetInCU: 0xFE, offset: 0xFE, size: 0x8, addend: 0x0, symName: _safe_communication_pattern, symObjAddr: 0x0, symBinAddr: 0x100002EB4, symSize: 0x1F0 }
+  - { offsetInCU: 0x298, offset: 0x298, size: 0x8, addend: 0x0, symName: _deadlock_prone_pattern, symObjAddr: 0x1F0, symBinAddr: 0x1000030A4, symSize: 0x210 }
+  - { offsetInCU: 0x3B6, offset: 0x3B6, size: 0x8, addend: 0x0, symName: _collective_deadlock_pattern, symObjAddr: 0x400, symBinAddr: 0x1000032B4, symSize: 0xE8 }
+  - { offsetInCU: 0x48B, offset: 0x48B, size: 0x8, addend: 0x0, symName: _circular_deadlock_pattern, symObjAddr: 0x4E8, symBinAddr: 0x10000339C, symSize: 0x124 }
+  - { offsetInCU: 0x560, offset: 0x560, size: 0x8, addend: 0x0, symName: _safe_nonblocking_pattern, symObjAddr: 0x60C, symBinAddr: 0x1000034C0, symSize: 0x194 }
+  - { offsetInCU: 0x71C, offset: 0x71C, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x7A0, symBinAddr: 0x100003654, symSize: 0x158 }
+...

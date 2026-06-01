@@ -1,0 +1,10 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/rakshitha/cd/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build/uninstrumented/performance/bandwidth_test'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _bandwidth_test_p2p, symObjAddr: 0x0, symBinAddr: 0x100002C58, symSize: 0x414 }
+  - { offsetInCU: 0x10A, offset: 0x10A, size: 0x8, addend: 0x0, symName: _bandwidth_test_p2p, symObjAddr: 0x0, symBinAddr: 0x100002C58, symSize: 0x414 }
+  - { offsetInCU: 0x677, offset: 0x677, size: 0x8, addend: 0x0, symName: _bandwidth_test_collective, symObjAddr: 0x414, symBinAddr: 0x10000306C, symSize: 0x45C }
+  - { offsetInCU: 0xBB1, offset: 0xBB1, size: 0x8, addend: 0x0, symName: _communication_pattern_analysis, symObjAddr: 0x870, symBinAddr: 0x1000034C8, symSize: 0x310 }
+  - { offsetInCU: 0xF67, offset: 0xF67, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0xB80, symBinAddr: 0x1000037D8, symSize: 0x218 }
+...

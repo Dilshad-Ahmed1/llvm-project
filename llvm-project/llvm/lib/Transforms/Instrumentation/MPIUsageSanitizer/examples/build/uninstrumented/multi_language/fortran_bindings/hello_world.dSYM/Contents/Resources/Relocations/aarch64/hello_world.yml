@@ -1,0 +1,8 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/rakshitha/cd/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build/uninstrumented/multi_language/fortran_bindings/hello_world'
+relocations:
+  - { offsetInCU: 0x6E, offset: 0x6E, size: 0x8, addend: 0x0, symName: _fortran_array_communication_, symObjAddr: 0x0, symBinAddr: 0x100003040, symSize: 0x5E0 }
+  - { offsetInCU: 0x19F, offset: 0x19F, size: 0x8, addend: 0x0, symName: _MAIN__, symObjAddr: 0x5E0, symBinAddr: 0x100003620, symSize: 0x3F4 }
+  - { offsetInCU: 0x27A, offset: 0x27A, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0xCA0, symBinAddr: 0x100003A20, symSize: 0x2C }
+...

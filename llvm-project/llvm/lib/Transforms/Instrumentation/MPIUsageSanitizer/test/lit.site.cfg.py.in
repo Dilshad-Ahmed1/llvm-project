@@ -1,0 +1,211 @@
+# -*- Python -*-
+
+# Site-specific configuration for MPI Usage Sanitizer Pass tests
+# This file is configured by CMake and contains build-specific settings
+
+import sys
+import os
+
+# Configuration variables from CMake
+config.llvm_src_root = "@LLVM_SOURCE_DIR@"
+config.llvm_obj_root = "@LLVM_BINARY_DIR@"
+config.llvm_tools_dir = "@LLVM_TOOLS_BINARY_DIR@"
+config.llvm_libs_dir = "@LLVM_LIBRARY_DIR@"
+config.llvm_shlib_dir = "@SHLIBDIR@"
+config.llvm_shlib_ext = "@SHLIBEXT@"
+config.llvm_exe_ext = "@EXEEXT@"
+config.lit_tools_dir = "@LLVM_LIT_TOOLS_DIR@"
+config.python_executable = "@Python3_EXECUTABLE@"
+config.gold_executable = "@GOLD_EXECUTABLE@"
+config.ld64_executable = "@LD64_EXECUTABLE@"
+config.enable_shared = @LLVM_ENABLE_SHARED@
+config.enable_assertions = @LLVM_ENABLE_ASSERTIONS@
+config.targets_to_build = "@TARGETS_TO_BUILD@"
+config.llvm_bindings = "@LLVM_BINDINGS@".split(' ')
+config.host_os = "@HOST_OS@"
+config.host_cc = "@HOST_CC@"
+config.host_cxx = "@HOST_CXX@"
+config.llvm_use_intel_jitevents = @LLVM_USE_INTEL_JITEVENTS@
+config.llvm_use_sanitizer = "@LLVM_USE_SANITIZER@"
+config.have_zlib = @LLVM_ENABLE_ZLIB@
+config.have_libxar = @LLVM_HAVE_LIBXAR@
+config.have_dia_sdk = @LLVM_ENABLE_DIA_SDK@
+config.enable_ffi = @LLVM_ENABLE_FFI@
+config.build_examples = @LLVM_BUILD_EXAMPLES@
+config.enable_threads = @LLVM_ENABLE_THREADS@
+config.build_shared_libs = @LLVM_BUILD_LLVM_DYLIB@
+config.link_llvm_dylib = @LLVM_LINK_LLVM_DYLIB@
+config.llvm_libxml2_enabled = @LLVM_LIBXML2_ENABLED@
+config.llvm_host_triple = "@LLVM_HOST_TRIPLE@"
+config.host_arch = "@HOST_ARCH@"
+config.have_opt_viewer_modules = @LLVM_HAVE_OPT_VIEWER_MODULES@
+config.libcxx_used = @LLVM_LIBCXX_USED@
+config.has_plugins = @LLVM_ENABLE_PLUGINS@
+config.linked_bye_extension = @LLVM_BYE_LINK_INTO_TOOLS@
+
+# MPI Usage Sanitizer specific configuration
+config.llvm_enable_mpi_sanitizer = @LLVM_ENABLE_MPI_SANITIZER@
+config.llvm_mpi_sanitizer_profiling = @LLVM_MPI_SANITIZER_ENABLE_PROFILING@
+config.llvm_mpi_sanitizer_optimization = @LLVM_MPI_SANITIZER_ENABLE_OPTIMIZATION@
+config.llvm_enable_property_based_testing = @LLVM_ENABLE_PROPERTY_BASED_TESTING@
+config.llvm_mpi_sanitizer_enable_performance_tests = @LLVM_MPI_SANITIZER_ENABLE_PERFORMANCE_TESTS@
+
+# MPI configuration
+config.mpi_found = @MPI_FOUND@
+if config.mpi_found:
+    config.mpi_include_path = "@MPI_INCLUDE_PATH@"
+    config.mpi_libraries = "@MPI_LIBRARIES@"
+
+# Build configuration
+config.llvm_build_mode = "@CMAKE_BUILD_TYPE@"
+config.llvm_optimization_level = "@LLVM_OPTIMIZATION_LEVEL@"
+
+# Compiler configuration
+config.clang = "@LLVM_TOOLS_BINARY_DIR@/clang@LLVM_EXEEXT@"
+config.clangxx = "@LLVM_TOOLS_BINARY_DIR@/clang++@LLVM_EXEEXT@"
+
+# Pass manager configuration
+config.llvm_use_new_pass_manager = @LLVM_USE_NEW_PASS_MANAGER@
+
+# Version information
+config.llvm_mpi_sanitizer_version_major = @LLVM_MPI_SANITIZER_VERSION_MAJOR@
+config.llvm_mpi_sanitizer_version_minor = @LLVM_MPI_SANITIZER_VERSION_MINOR@
+config.llvm_mpi_sanitizer_version_patch = @LLVM_MPI_SANITIZER_VERSION_PATCH@
+
+# Test configuration
+config.test_timeout = @LIT_TEST_TIMEOUT@
+config.enable_expensive_checks = @LLVM_ENABLE_EXPENSIVE_CHECKS@
+
+# Platform-specific settings
+import platform
+config.host_platform = platform.system()
+
+# Import the main configuration
+lit_config.load_config(config, "@CMAKE_CURRENT_SOURCE_DIR@/test/lit.cfg.py")
+
+# Additional platform-specific configuration
+if config.host_platform == 'Windows':
+    # Windows-specific settings
+    config.available_features.add('windows')
+    if config.host_arch == 'x86_64':
+        config.available_features.add('windows-x64')
+elif config.host_platform == 'Darwin':
+    # macOS-specific settings
+    config.available_features.add('darwin')
+    config.available_features.add('macos')
+elif config.host_platform == 'Linux':
+    # Linux-specific settings
+    config.available_features.add('linux')
+    
+    # Check for specific Linux distributions
+    try:
+        with open('/etc/os-release', 'r') as f:
+            os_release = f.read()
+            if 'Ubuntu' in os_release:
+                config.available_features.add('ubuntu')
+            elif 'CentOS' in os_release or 'Red Hat' in os_release:
+                config.available_features.add('rhel')
+    except:
+        pass
+
+# Architecture-specific features
+if config.host_arch == 'x86_64':
+    config.available_features.add('x86_64')
+elif config.host_arch == 'aarch64':
+    config.available_features.add('aarch64')
+elif config.host_arch.startswith('arm'):
+    config.available_features.add('arm')
+
+# Compiler-specific features
+if 'clang' in config.host_cc.lower():
+    config.available_features.add('clang')
+elif 'gcc' in config.host_cc.lower():
+    config.available_features.add('gcc')
+
+# Build type features
+if config.llvm_build_mode == 'Debug':
+    config.available_features.add('debug')
+elif config.llvm_build_mode == 'Release':
+    config.available_features.add('release')
+elif config.llvm_build_mode == 'RelWithDebInfo':
+    config.available_features.add('relwithdebinfo')
+
+# Sanitizer features
+if config.llvm_use_sanitizer:
+    sanitizers = config.llvm_use_sanitizer.split(';')
+    for sanitizer in sanitizers:
+        if sanitizer == 'Address':
+            config.available_features.add('asan')
+        elif sanitizer == 'Memory':
+            config.available_features.add('msan')
+        elif sanitizer == 'Thread':
+            config.available_features.add('tsan')
+        elif sanitizer == 'Undefined':
+            config.available_features.add('ubsan')
+
+# LLVM-specific features
+if config.enable_assertions:
+    config.available_features.add('asserts')
+
+if config.enable_shared:
+    config.available_features.add('shared-libs')
+
+if config.has_plugins:
+    config.available_features.add('plugins')
+
+if config.enable_threads:
+    config.available_features.add('threads')
+
+# Target-specific features
+targets = config.targets_to_build.split()
+for target in targets:
+    config.available_features.add('target-' + target.lower())
+
+# MPI Usage Sanitizer features
+if config.llvm_enable_mpi_sanitizer:
+    config.available_features.add('mpi-sanitizer')
+    
+    if config.llvm_mpi_sanitizer_profiling:
+        config.available_features.add('mpi-sanitizer-profiling')
+    
+    if config.llvm_mpi_sanitizer_optimization:
+        config.available_features.add('mpi-sanitizer-optimization')
+
+if config.llvm_enable_property_based_testing:
+    config.available_features.add('property-based-testing')
+
+# Performance testing features
+if hasattr(config, 'llvm_mpi_sanitizer_enable_performance_tests') and config.llvm_mpi_sanitizer_enable_performance_tests:
+    config.available_features.add('performance-tests')
+
+# Expensive checks
+if config.enable_expensive_checks:
+    config.available_features.add('expensive-checks')
+
+# Pass manager features
+if config.llvm_use_new_pass_manager:
+    config.available_features.add('new-pass-manager')
+else:
+    config.available_features.add('legacy-pass-manager')
+
+# Library features
+if config.have_zlib:
+    config.available_features.add('zlib')
+
+if config.have_libxar:
+    config.available_features.add('libxar')
+
+if config.llvm_libxml2_enabled:
+    config.available_features.add('libxml2')
+
+# Development features
+if config.build_examples:
+    config.available_features.add('examples')
+
+# Debugging output
+if lit_config.debug:
+    lit_config.note('MPI Usage Sanitizer site configuration loaded')
+    lit_config.note('Available features: %s' % sorted(config.available_features))
+    lit_config.note('MPI Sanitizer enabled: %s' % config.llvm_enable_mpi_sanitizer)
+    lit_config.note('Profiling enabled: %s' % config.llvm_mpi_sanitizer_profiling)
+    lit_config.note('Optimization enabled: %s' % config.llvm_mpi_sanitizer_optimization)

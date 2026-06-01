@@ -1,0 +1,141 @@
+# Sample MPI Usage Sanitizer Error Detection Output
+# Program: error_cases/buffer_overflow.c
+# Command: mpirun -np 2 ./buffer_overflow_instrumented
+# Date: 2024-01-15 14:35:42
+
+========================================
+MPI Usage Sanitizer v1.0
+Instrumentation Level: FULL
+Error Detection: ENABLED
+Configuration: Default settings
+========================================
+
+[MPI Sanitizer] Process 0: Starting error detection example
+[MPI Sanitizer] Process 1: Starting error detection example
+
+[MPI Sanitizer] Pre-call: MPI_Init at buffer_overflow.c:25
+[MPI Sanitizer] Post-call: MPI_Init returned MPI_SUCCESS (0)
+
+Process 0: Buffer overflow receive example
+Process 1: Buffer overflow receive example
+
+[MPI Sanitizer] Pre-call: MPI_Send at buffer_overflow.c:35
+[MPI Sanitizer]   - Function: MPI_Send
+[MPI Sanitizer]   - Buffer: 0x7f8b4c000b20, allocated size: 4000 bytes
+[MPI Sanitizer]   - Count: 1000, Datatype: MPI_INT (4 bytes each)
+[MPI Sanitizer]   - Total message size: 4000 bytes
+[MPI Sanitizer]   - Destination: 1 (valid in communicator)
+[MPI Sanitizer]   - Tag: 0 (within valid range)
+[MPI Sanitizer]   - Buffer validation: PASSED
+[MPI Sanitizer] Post-call: MPI_Send returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Message sent successfully: 4000 bytes to process 1
+
+Process 0: Sending 1000 integers to process 1
+
+[MPI Sanitizer] Pre-call: MPI_Recv at buffer_overflow.c:47
+[MPI Sanitizer]   - Function: MPI_Recv
+[MPI Sanitizer]   - Buffer: 0x7f8b4c001b20, allocated size: 400 bytes
+[MPI Sanitizer]   - Count: 100, Datatype: MPI_INT (4 bytes each)
+[MPI Sanitizer]   - Maximum receive size: 400 bytes
+[MPI Sanitizer]   - Source: 0 (valid in communicator)
+[MPI Sanitizer]   - Tag: 0 (within valid range)
+
+[MPI Sanitizer] *** ERROR: BUFFER OVERFLOW DETECTED ***
+[MPI Sanitizer]   - Incoming message size: 4000 bytes (1000 integers)
+[MPI Sanitizer]   - Receive buffer capacity: 400 bytes (100 integers)
+[MPI Sanitizer]   - OVERFLOW AMOUNT: 3600 bytes (900 integers)
+[MPI Sanitizer]   - RISK LEVEL: CRITICAL - Data will be truncated
+[MPI Sanitizer]   
+[MPI Sanitizer] RECOMMENDATION:
+[MPI Sanitizer]   - Increase receive buffer size to at least 4000 bytes
+[MPI Sanitizer]   - Or use MPI_Probe to determine message size first
+[MPI Sanitizer]   - Example: MPI_Probe(source, tag, comm, &status);
+[MPI Sanitizer]            MPI_Get_count(&status, datatype, &count);
+
+Process 1: Attempting to receive into buffer of size 100
+
+[MPI Sanitizer] Post-call: MPI_Recv returned MPI_SUCCESS (0)
+[MPI Sanitizer]   - Message received: 100/1000 integers (10% of message)
+[MPI Sanitizer]   - Data truncated: 900 integers lost
+[MPI Sanitizer]   - Buffer utilization: 100% (400/400 bytes)
+
+Process 1: Received 100 integers (buffer size was 100)
+
+[MPI Sanitizer] Pre-call: MPI_Send at buffer_overflow.c:85 (Buffer Underflow Example)
+[MPI Sanitizer]   - Function: MPI_Send
+[MPI Sanitizer]   - Buffer: 0x7f8b4c002b20, allocated size: 400 bytes
+[MPI Sanitizer]   - Count: 1000, Datatype: MPI_INT (4 bytes each)
+[MPI Sanitizer]   - Requested send size: 4000 bytes
+
+[MPI Sanitizer] *** ERROR: BUFFER UNDERFLOW DETECTED ***
+[MPI Sanitizer]   - Buffer allocated size: 400 bytes (100 integers)
+[MPI Sanitizer]   - Requested send size: 4000 bytes (1000 integers)
+[MPI Sanitizer]   - UNDERFLOW AMOUNT: 3600 bytes (900 integers)
+[MPI Sanitizer]   - RISK LEVEL: CRITICAL - Reading beyond allocated memory
+[MPI Sanitizer]   
+[MPI Sanitizer] MEMORY ANALYSIS:
+[MPI Sanitizer]   - Buffer start: 0x7f8b4c002b20
+[MPI Sanitizer]   - Buffer end:   0x7f8b4c002d10 (allocated boundary)
+[MPI Sanitizer]   - Read end:     0x7f8b4c003b20 (requested boundary)
+[MPI Sanitizer]   - VIOLATION: Reading 3600 bytes beyond allocated memory
+[MPI Sanitizer]   
+[MPI Sanitizer] RECOMMENDATION:
+[MPI Sanitizer]   - Fix buffer allocation: malloc(1000 * sizeof(int))
+[MPI Sanitizer]   - Or reduce send count to match allocated size
+[MPI Sanitizer]   - CRITICAL: This will likely cause segmentation fault
+
+Process 0: Allocated buffer for 100 integers
+Process 0: Attempting to send 1000 integers (MORE than allocated!)
+
+[MPI Sanitizer] *** RUNTIME ERROR: SEGMENTATION FAULT PREVENTED ***
+[MPI Sanitizer]   - MPI operation aborted to prevent memory corruption
+[MPI Sanitizer]   - Process will be terminated safely
+
+[MPI Sanitizer] Pre-call: MPI_Abort at buffer_overflow.c:90
+[MPI Sanitizer]   - Emergency termination due to critical error
+[MPI Sanitizer]   - Error code: 1 (Buffer underflow)
+[MPI Sanitizer] Post-call: MPI_Abort - Process terminated
+
+========================================
+MPI Usage Sanitizer Error Summary
+========================================
+
+CRITICAL ERRORS DETECTED: 2
+
+1. Buffer Overflow (Process 1)
+   Location: buffer_overflow.c:47 (MPI_Recv)
+   Issue: Receive buffer too small for incoming message
+   Impact: Data truncation (90% of message lost)
+   Severity: HIGH
+   
+2. Buffer Underflow (Process 0)  
+   Location: buffer_overflow.c:85 (MPI_Send)
+   Issue: Sending more data than allocated in buffer
+   Impact: Memory corruption, segmentation fault
+   Severity: CRITICAL
+
+WARNINGS: 0
+RECOMMENDATIONS: 2
+
+Error Prevention Tips:
+1. Always validate buffer sizes before MPI operations
+2. Use MPI_Probe to determine incoming message sizes
+3. Implement proper error checking for malloc/allocation
+4. Consider using dynamic buffer allocation
+5. Enable compiler warnings for array bounds checking
+
+Memory Safety Analysis:
+- Buffer validations performed: 4
+- Memory violations detected: 2
+- Segmentation faults prevented: 1
+- Data integrity issues: 1
+
+Performance Impact:
+- Error detection overhead: 2.3%
+- Memory analysis overhead: 1.8%
+- Total sanitizer overhead: 4.1%
+
+========================================
+MPI Usage Sanitizer: Critical errors detected
+Program terminated to prevent memory corruption
+========================================
