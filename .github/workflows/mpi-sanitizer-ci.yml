@@ -240,30 +240,29 @@ jobs:
         ./performance_comparison.sh basic/hello_world -np 2 > perf_results.txt
         
         # Check that overhead is reasonable (< 50%)
-                  python3 << 'EOF'
-          import re
-
-          with open("perf_results.txt", "r") as f:
-              content = f.read()
-
-          overhead_match = re.search(
-              r"Overhead: [0-9.]+s \(([0-9.]+)%\)",
-              content
-          )
-
-          if overhead_match:
-              overhead = float(overhead_match.group(1))
-              print(f"Performance overhead: {overhead}%")
-
-              if overhead > 50.0:
-                  print("ERROR: Performance overhead too high!")
-                  exit(1)
-              else:
-                  print("Performance overhead acceptable")
-          else:
-              print("Could not parse performance results")
-              exit(1)
-          EOF
+        python3 << 'EOF'
+        import re
+        with open("perf_results.txt", "r") as f:
+            content = f.read()
+        
+        overhead_match = re.search(
+            r"Overhead: [0-9.]+s \(([0-9.]+)%\)",
+            content
+        )
+        
+        if overhead_match:
+            overhead = float(overhead_match.group(1))
+            print(f"Performance overhead: {overhead}%")
+            
+            if overhead > 50.0:
+                print("ERROR: Performance overhead too high!")
+                exit(1)
+            else:
+                print("Performance overhead acceptable")
+        else:
+            print("Could not parse performance results")
+            exit(1)
+        EOF
     
     - name: Run property-based tests
       run: |
@@ -400,46 +399,46 @@ jobs:
         
         # Test 1: Simple matrix multiplication
         cat > matrix_mult.c << 'EOF'
-#include <mpi.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-int main(int argc, char** argv) {
-    MPI_Init(&argc, &argv);
-    
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    
-    int n = 100;
-    double *a = malloc(n * sizeof(double));
-    double *b = malloc(n * sizeof(double));
-    
-    // Initialize data
-    for (int i = 0; i < n; i++) {
-        a[i] = rank * n + i;
-        b[i] = i;
-    }
-    
-    // Simple reduction
-    double local_sum = 0.0;
-    for (int i = 0; i < n; i++) {
-        local_sum += a[i] * b[i];
-    }
-    
-    double global_sum;
-    MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    
-    if (rank == 0) {
-        printf("Global sum: %f\n", global_sum);
-    }
-    
-    free(a);
-    free(b);
-    MPI_Finalize();
-    return 0;
-}
-EOF
+        #include <mpi.h>
+        #include <stdio.h>
+        #include <stdlib.h>
+        
+        int main(int argc, char** argv) {
+            MPI_Init(&argc, &argv);
+            
+            int rank, size;
+            MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+            MPI_Comm_size(MPI_COMM_WORLD, &size);
+            
+            int n = 100;
+            double *a = malloc(n * sizeof(double));
+            double *b = malloc(n * sizeof(double));
+            
+            // Initialize data
+            for (int i = 0; i < n; i++) {
+                a[i] = rank * n + i;
+                b[i] = i;
+            }
+            
+            // Simple reduction
+            double local_sum = 0.0;
+            for (int i = 0; i < n; i++) {
+                local_sum += a[i] * b[i];
+            }
+            
+            double global_sum;
+            MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+            
+            if (rank == 0) {
+                printf("Global sum: %f\n", global_sum);
+            }
+            
+            free(a);
+            free(b);
+            MPI_Finalize();
+            return 0;
+        }
+        EOF
         
         # Compile with MPI Sanitizer
         clang -fpass-plugin=$PWD/../llvm-install/lib/LLVMMPIUsageSanitizerComponents.so \
@@ -566,25 +565,30 @@ EOF
           llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/performance_plots/
         retention-days: 30
 
-# Summary job that depends on all others
-summary:
-  name: CI Summary
-  runs-on: ubuntu-22.04
-  needs: [build-and-test, test-mpi-implementations, integration-tests, quality-checks, performance-regression]
-  if: always()
-  
-  steps:
-  - name: Check overall status
-    run: |
-      echo "Build and Test: ${{ needs.build-and-test.result }}"
-      echo "MPI Implementations: ${{ needs.test-mpi-implementations.result }}"
-      echo "Integration Tests: ${{ needs.integration-tests.result }}"
-      echo "Quality Checks: ${{ needs.quality-checks.result }}"
-      echo "Performance Regression: ${{ needs.performance-regression.result }}"
-      
-      if [[ "${{ needs.build-and-test.result }}" != "success" ]]; then
-        echo "❌ Core build and test failed"
-        exit 1
-      fi
-      
-      echo "✅ MPI Usage Sanitizer CI completed successfully"
+  # Summary job that depends on all others
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-22.04
+    needs: 
+      - build-and-test
+      - test-mpi-implementations
+      - integration-tests
+      - quality-checks
+      - performance-regression
+    if: always()
+    
+    steps:
+    - name: Check overall status
+      run: |
+        echo "Build and Test: ${{ needs.build-and-test.result }}"
+        echo "MPI Implementations: ${{ needs.test-mpi-implementations.result }}"
+        echo "Integration Tests: ${{ needs.integration-tests.result }}"
+        echo "Quality Checks: ${{ needs.quality-checks.result }}"
+        echo "Performance Regression: ${{ needs.performance-regression.result }}"
+        
+        if [[ "${{ needs.build-and-test.result }}" != "success" ]]; then
+          echo "❌ Core build and test failed"
+          exit 1
+        fi
+        
+        echo "✅ MPI Usage Sanitizer CI completed successfully"
