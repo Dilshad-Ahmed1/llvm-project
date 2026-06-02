@@ -10,6 +10,7 @@ add_llvm_component_library(LLVMInstrumentation
   MemProfInstrumentation.cpp
   MemProfUse.cpp
   MemorySanitizer.cpp
+  MPIUsageSanitizer.cpp
   NumericalStabilitySanitizer.cpp
   IndirectCallPromotion.cpp
   InstrProfiling.cpp
@@ -27,6 +28,8 @@ add_llvm_component_library(LLVMInstrumentation
   TypeSanitizer.cpp
   HWAddressSanitizer.cpp
   RealtimeSanitizer.cpp
+
+  PARTIAL_SOURCES_INTENDED
 
   ADDITIONAL_HEADER_DIRS
   ${LLVM_MAIN_INCLUDE_DIR}/llvm/Transforms
