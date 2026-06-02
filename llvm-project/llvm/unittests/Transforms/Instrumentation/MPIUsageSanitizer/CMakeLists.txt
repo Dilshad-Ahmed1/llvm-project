@@ -7,6 +7,8 @@ set(LLVM_LINK_COMPONENTS
 add_llvm_unittest(MPIUsageSanitizerTests
   ConfigurationManagerTest.cpp
   ErrorHandlerTest.cpp
+  MPIUsageSanitizerConfigTest.cpp
+  PARTIAL_SOURCES_INTENDED
   )
 
 target_link_libraries(MPIUsageSanitizerTests PRIVATE
