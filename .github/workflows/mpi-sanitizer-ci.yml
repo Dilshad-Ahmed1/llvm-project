@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'llvm-project/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/**'
+      - 'llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/**'
       - '.github/workflows/mpi-sanitizer-ci.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'llvm-project/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/**'
+      - 'llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/**'
       - '.github/workflows/mpi-sanitizer-ci.yml'
   schedule:
     # Run nightly builds at 2 AM UTC
@@ -121,7 +121,7 @@ jobs:
         path: |
           llvm-build
           llvm-install
-        key: llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-${{ matrix.compiler }}-${{ hashFiles('llvm-project/llvm-project/llvm/**') }}
+        key: llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-${{ matrix.compiler }}-${{ hashFiles('llvm-project/llvm/**') }}
         restore-keys: |
           llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-${{ matrix.compiler }}-
           llvm-${{ env.LLVM_VERSION }}-${{ matrix.os }}-
@@ -144,15 +144,15 @@ jobs:
         cd llvm-build
         
         # Debug: Check if the LLVM source directory exists
-        if [ ! -d "../llvm-project/llvm-project/llvm" ]; then
-          echo "ERROR: LLVM source directory not found at ../llvm-project/llvm-project/llvm"
+        if [ ! -d "../llvm-project/llvm" ]; then
+          echo "ERROR: LLVM source directory not found at ../llvm-project/llvm"
           echo "Available directories:"
           ls -la ../
           ls -la ../llvm-project/ 2>/dev/null || echo "llvm-project directory not accessible"
           exit 1
         fi
         
-        cmake -G Ninja ../llvm-project/llvm-project/llvm \
+        cmake -G Ninja ../llvm-project/llvm \
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
           -DCMAKE_INSTALL_PREFIX=$PWD/../llvm-install \
           -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra" \
@@ -213,7 +213,7 @@ jobs:
     
     - name: Build and test example programs
       run: |
-        cd llvm-project/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
+        cd llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
         
         # Set environment variables
         export LLVM_DIR=$PWD/../../../../../llvm-install
@@ -246,7 +246,7 @@ jobs:
     
     - name: Run performance benchmarks
       run: |
-        cd llvm-project/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build
+        cd llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build
         
         # Run performance comparison
         ./performance_comparison.sh basic/hello_world -np 2 > perf_results.txt
@@ -306,7 +306,7 @@ jobs:
         name: test-artifacts-${{ matrix.os }}-${{ matrix.compiler }}
         path: |
           llvm-build/test-results/
-          llvm-project/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build/perf_results.txt
+          llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples/build/perf_results.txt
           llvm-build/Testing/
         retention-days: 7
 
@@ -349,13 +349,13 @@ jobs:
         path: |
           llvm-build
           llvm-install
-        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm-project/llvm/**') }}
+        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm/**') }}
     
     - name: Test with specific MPI implementation
       run: |
         export PATH=$PWD/llvm-install/bin:$PATH
         
-        cd llvm-project/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
+        cd llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer/examples
         
         # Override MPI compiler
         case "${{ matrix.mpi }}" in
@@ -399,7 +399,7 @@ jobs:
         path: |
           llvm-build
           llvm-install
-        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm-project/llvm/**') }}
+        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm/**') }}
     
     - name: Test with real MPI applications
       run: |
@@ -499,7 +499,7 @@ jobs:
     - name: Run static analysis
       run: |
         # Run clang-tidy on source files
-        find llvm-project/llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer \
+        find llvm-project/llvm/lib/Transforms/Instrumentation/MPIUsageSanitizer \
           -name "*.cpp" | \
           xargs clang-tidy \
             --checks='-*,llvm-*,readability-*,performance-*,modernize-*' \
@@ -550,7 +550,7 @@ jobs:
         path: |
           llvm-build
           llvm-install
-        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm-project/llvm/**') }}
+        key: llvm-${{ env.LLVM_VERSION }}-ubuntu-22.04-clang-${{ hashFiles('llvm-project/llvm/**') }}
     
     - name: Run performance regression tests
       run: |
